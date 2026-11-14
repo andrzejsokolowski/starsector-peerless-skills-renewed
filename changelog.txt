@@ -1,2 +1,8 @@
 Version 0.1.0 (2026-11-14)
-- First release.
+- First release: a Peerless level past Elite for your own fourteen combat skills, bought with Peerless skill points on the Second-in-Command Character screen (C).
+- Click an Elite skill and press Save to make it Peerless; click a Peerless skill to undo it and get the point back.
+- Peerless section in every combat skill tooltip, gold border on Peerless skills.
+- Renewed effects: ten skills reworked (Helmsmanship, Impact Mitigation, Point Defense, Target Analysis, Systems Expertise, Missile Specialization, Gunnery Implants, Energy Weapon Mastery, Ordnance Expertise, Polarized Armor), four kept from Peerless Skills.
+- LunaLib setting to use the original Peerless Skills effects instead.
+- Points from achievements of Achievements - Renewed, once per campaign, or from experience past the level cap; point rate setting.
+- Console commands: PeerlessAddPoints, PeerlessStatus, PeerlessUnlockAll, PeerlessRefund.
