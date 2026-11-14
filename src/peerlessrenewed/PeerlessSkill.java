@@ -2,7 +2,7 @@ package peerlessrenewed;
 
 /**
  * The fourteen combat skills of the player that can be made Peerless, in Second-in-Command's order.
- * Each has the text of its Renewed effect and of its Original effect (the first Peerless Skills mod).
+ * Each has the text of its Renewed effect and of its Original effect (the original Peerless effects of Starsector before 0.95).
  * The four skills Andrzej did not rework use the same effect in both modes.
  */
 public enum PeerlessSkill {
@@ -60,7 +60,7 @@ public enum PeerlessSkill {
         this.original = original;
     }
 
-    /** Kept from the first Peerless Skills mod in both modes. */
+    /** Kept as they were, in both modes. */
     public boolean isKept() {
         return renewed == null;
     }

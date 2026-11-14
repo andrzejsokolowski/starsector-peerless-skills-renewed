@@ -12,7 +12,7 @@ public final class Settings {
 
     private Settings() {}
 
-    /** True when the Original effects of the first Peerless Skills mod are chosen. */
+    /** True when the Original effects (Starsector before 0.95) are chosen. */
     public static boolean originalEffects() {
         try {
             String value = LunaSettings.getString(MOD_ID, "psr_effects");

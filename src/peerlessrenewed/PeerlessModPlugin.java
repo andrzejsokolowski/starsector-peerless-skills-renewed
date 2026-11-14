@@ -16,6 +16,12 @@ public class PeerlessModPlugin extends BaseModPlugin {
         if (Global.getSettings().getModManager().isModEnabled("peerless_skills")) {
             log.warn("Peerless Skills - Renewed: the first Peerless Skills mod is also enabled. Both add Peerless effects; turn one off.");
         }
+        try {
+            Global.getSettings().loadTexture(peerlessrenewed.patches.SkillWidgetRenderPatch.DIAMOND);
+        } catch (Exception e) {
+            log.warn("Peerless Skills - Renewed: could not load the Peerless diamond", e);
+        }
+        peerlessrenewed.effects.PeerlessTooltipEffect.addToSkills();
     }
 
     @Override

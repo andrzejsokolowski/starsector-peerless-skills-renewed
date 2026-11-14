@@ -13,7 +13,8 @@ are optional. Do not run it together with the first Peerless Skills mod.
 - Click an Elite skill to make it Peerless, then press Save. Each costs one point.
 - Click a Peerless skill to undo it and get the point back. A skill that loses Elite (a respec, a
   Second-in-Command reset) also loses Peerless, and the point comes back.
-- Peerless skills have a gold border and gold stars. Their tooltip has a Peerless section after Elite.
+- Peerless skills have a gold border and a gold diamond instead of the Elite stars. Their tooltip has a
+  Peerless section after Elite.
 
 ## Where points come from
 
@@ -31,8 +32,9 @@ are optional. Do not run it together with the first Peerless Skills mod.
 
 ## Effects
 
-LunaLib setting **Peerless effects**: Renewed (default) or Original (all fourteen effects of the first
-Peerless Skills mod). Effects apply to the ship you pilot, like the base skills.
+LunaLib setting **Peerless effects**: Renewed (default) or Original (the original effects: Starsector
+before 0.95 had Peerless skills, and the Peerless Skills mod only brought them back). Effects apply to the
+ship the character pilots, like the base skills.
 
 | Skill | Renewed | Original |
 | --- | --- | --- |
@@ -58,11 +60,14 @@ ship can leave the old one over its ordnance point limit.
 
 Optional, LunaLib setting **Peerless for officers**: Off (default), Peerless points, Story points or
 Credits. When it is on, an **Officers** button next to your Peerless skill points opens a window with
-every officer in your fleet and their Elite combat skills. Click one to make it Peerless and pay its cost
+every officer in your fleet and their Elite combat skills (only the fourteen combat skills you can take
+yourself; other skills officers can have are not listed). Click one to make it Peerless and pay its cost
 (1 Peerless skill point, 2 story points or 100,000 credits by default; the last two can be changed).
 Click a Peerless one to undo it and get back exactly what it cost. An officer whose skill loses Elite also
 loses Peerless and gets the payment back. Officers with Peerless skills carry the same hidden skill as you;
-with the setting Off their Peerless skills do nothing.
+with the setting Off their Peerless skills do nothing. The game's own officer screens show a Peerless
+part in the skill's tooltip; the icons there keep the Elite stars, because only Second-in-Command's
+Character screen is drawn by a mod.
 
 ## Console commands
 
