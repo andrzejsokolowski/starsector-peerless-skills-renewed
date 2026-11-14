@@ -29,7 +29,7 @@ import second_in_command.ui.elements.SkillWidgetElement;
 /**
  * Hooks into Second-in-Command's player panel (the top of the Character screen, C), without replacing
  * any of it:
- * - after the panel is built, the Peerless box is added;
+ * - after the panel is built, the Peerless points line (and Save and Cancel) are added;
  * - the tooltip of each of the fourteen combat skills is built by {@link PeerlessSkillTooltip};
  * - a click on a skill reaches {@link PeerlessUi#handleClick} first. The click handler is the Kotlin
  *   lambda inside recreateAptitudePanel; it is matched by its parameter types, not its generated name.
@@ -52,7 +52,7 @@ public class SiCPlayerPanelPatch {
             Object subpanel = context.getArg(0);
             if (subpanel instanceof CustomPanelAPI) PeerlessUi.onPlayerPanelBuilt(panel, (CustomPanelAPI) subpanel);
         } catch (Throwable t) {
-            log.error("Peerless Skills - Renewed: could not add the Peerless box", t);
+            log.error("Peerless Skills - Renewed: could not add the Peerless points", t);
         }
     }
 

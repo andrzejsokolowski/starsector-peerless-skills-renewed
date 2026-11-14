@@ -17,8 +17,9 @@ PSR-1 holds Andrzej's original request word for word.
 ## How it hangs together
 
 - `patches/` are PatchLib hooks into Second-in-Command 2.1.1: after `SCPlayerPanel.recreatePlayerPanel`
-  (adds the box), a redirect of `VanillaSkillTooltip.addToTooltip` inside `recreateAptitudePanel` (our
-  tooltip subclass), a Before on the skill-click Kotlin lambda matched by its 7 parameter types, and an
+  (adds the points line under the level at y 246 and Save/Cancel under the Combat icon), a redirect of
+  `VanillaSkillTooltip.addToTooltip` inside `recreateAptitudePanel` (our tooltip subclass),
+  a Before on the skill-click Kotlin lambda matched by its 7 parameter types, and an
   After on `SkillWidgetElement.render` (gold border). Check these after a Second-in-Command update.
 - The effects ride on a hidden npc_only skill `psr_peerless` kept at level 1 on the player
   (`PeerlessShipEffect`, `PeerlessCharacterEffect`, battle logic in `PeerlessShip`).

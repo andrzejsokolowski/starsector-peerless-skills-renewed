@@ -1,3 +1,8 @@
+Version 0.1.1 (2026-11-14)
+- Peerless skill points are now a plain line under your level, no longer a box over the Executive Officers bar.
+- Save and Cancel moved under the Combat icon.
+- The skill tooltip no longer says "Needs Elite first".
+
 Version 0.1.0 (2026-11-14)
 - First release: a Peerless level past Elite for your own fourteen combat skills, bought with Peerless skill points on the Second-in-Command Character screen (C).
 - Click an Elite skill and press Save to make it Peerless; click a Peerless skill to undo it and get the point back.

@@ -8,8 +8,8 @@ are optional. Do not run it together with the first Peerless Skills mod.
 
 ## Peerless skill points
 
-- The Character screen shows a Peerless box to the right of your combat skills: your Peerless skill
-  points, the effect mode, where points come from, and Save and Cancel while you have changes.
+- The Character screen shows "-Peerless skill points: N" under your level. Hover it for where points
+  come from and the effect mode. Save and Cancel appear under the Combat icon while you have changes.
 - Click an Elite skill to make it Peerless, then press Save. Each costs one point.
 - Click a Peerless skill to undo it and get the point back. A skill that loses Elite (a respec, a
   Second-in-Command reset) also loses Peerless, and the point comes back.

@@ -33,7 +33,7 @@ public final class PeerlessData {
     private static final String KEY_XP_LAST = "psr_xpLast";
     private static final String KEY_EARNED = "psr_earned";
 
-    /** Peerless gold, used for the badge, the box and messages. */
+    /** Peerless gold, used for the badge, the points and messages. */
     public static final Color GOLD = new Color(255, 200, 70);
 
     private PeerlessData() {}
@@ -106,7 +106,7 @@ public final class PeerlessData {
             Global.getSector().getCampaignUI().addMessage(text, GOLD);
             Global.getSoundPlayer().playUISound("ui_char_gained_story_point", 1f, 1f);
         } catch (Throwable t) {
-            // No campaign screen to show it on; the box on the character screen shows the points.
+            // No campaign screen to show it on; the character screen shows the points.
         }
     }
 

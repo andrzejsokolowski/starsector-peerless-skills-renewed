@@ -55,7 +55,7 @@ public class PeerlessSkillTooltip extends VanillaSkillTooltip {
         } else if (pending) {
             tooltip.addPara("Becomes Peerless when you press Save.", gold, 8f);
         } else if (!elite) {
-            tooltip.addPara("Needs Elite first.", Misc.getNegativeHighlightColor(), 8f);
+            // Nothing: the levels go 1, 2, 3 in order.
         } else if (PeerlessUi.available() > 0) {
             tooltip.addPara("Click to make it Peerless: costs 1 Peerless skill point.", 8f, Misc.getTextColor(), gold, "1 Peerless skill point");
         } else {

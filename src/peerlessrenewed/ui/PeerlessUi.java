@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
-import org.lwjgl.opengl.GL11;
 
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.BaseCustomUIPanelPlugin;
@@ -17,8 +16,6 @@ import com.fs.starfarer.api.ui.BaseTooltipCreator;
 import com.fs.starfarer.api.ui.ButtonAPI;
 import com.fs.starfarer.api.ui.CustomPanelAPI;
 import com.fs.starfarer.api.ui.CutStyle;
-import com.fs.starfarer.api.ui.LabelAPI;
-import com.fs.starfarer.api.ui.PositionAPI;
 import com.fs.starfarer.api.ui.TooltipMakerAPI;
 import com.fs.starfarer.api.util.Misc;
 
@@ -31,8 +28,8 @@ import second_in_command.ui.elements.CombatSkillWidgetElement;
 import second_in_command.ui.elements.SkillWidgetElement;
 
 /**
- * The Peerless part of Second-in-Command's Character screen (C): the box with the Peerless skill points,
- * Save and Cancel, and what a click on one of the fourteen combat skills does.
+ * The Peerless part of Second-in-Command's Character screen (C): the Peerless skill points line under the
+ * level, Save and Cancel under the Combat icon, and what a click on one of the fourteen combat skills does.
  *
  * Clicks: an Elite skill with a point to spare becomes "pending Peerless" (left click); Save spends the
  * points. A pending skill clicked again is no longer pending. A Peerless skill clicked (either button)
@@ -42,11 +39,20 @@ public final class PeerlessUi {
 
     private static final Logger log = Global.getLogger(PeerlessUi.class);
 
-    /** SiC draws its combat frame 755 wide from x 310 of this panel; the box sits to its right. */
-    private static final float WIDE_X = 1085f;
-    private static final float WIDE_Y = 12f;
-    private static final float WIDE_W = 250f;
-    private static final float WIDE_H = 225f;
+    /**
+     * Second-in-Command's player column: "-Hover over the bar..." and "-Level N" end at y 241, the
+     * Executive Officers bar starts at y 265 (275 without the compact layout). One line fits between.
+     */
+    private static final float POINTS_X = 0f;
+    private static final float POINTS_Y = 246f;
+    private static final float POINTS_W = 260f;
+    private static final float POINTS_H = 18f;
+
+    /** Under the Combat icon (x 328 to 424, y 76 to 176) inside the combat frame (it ends at y 237). */
+    private static final float BUTTONS_X = 331f;
+    private static final float BUTTONS_Y = 183f;
+    private static final float BUTTON_W = 90f;
+    private static final float BUTTON_H = 22f;
 
     private static final Set<String> pending = new LinkedHashSet<>();
     private static Object lastPanel = null;
@@ -132,75 +138,38 @@ public final class PeerlessUi {
             pending.remove(list.get(list.size() - 1));
         }
         try {
-            addBox(panel, subpanel);
+            addPeerlessUi(panel, subpanel);
         } catch (Throwable t) {
-            log.error("Peerless Skills - Renewed: could not add the Peerless box", t);
+            log.error("Peerless Skills - Renewed: could not add the Peerless points", t);
         }
     }
 
-    private static void addBox(SCPlayerPanel panel, CustomPanelAPI subpanel) {
-        float panelWidth = subpanel.getPosition().getWidth();
-        boolean wide = panelWidth <= 0f || panelWidth >= WIDE_X + WIDE_W + 20f;
-        float w = wide ? WIDE_W : 260f;
-        float h = wide ? WIDE_H : 54f;
-
-        BoxPlugin plugin = new BoxPlugin(panel, subpanel);
-        CustomPanelAPI box = Global.getSettings().createCustom(w, h, plugin);
-        subpanel.addComponent(box).inTL(wide ? WIDE_X : 0f, wide ? WIDE_Y : 252f);
-
-        TooltipMakerAPI el = box.createUIElement(w - 16f, h - 10f, false);
-        box.addUIElement(el).inTL(8f, 6f);
-
+    private static void addPeerlessUi(SCPlayerPanel panel, CustomPanelAPI subpanel) {
         int available = available();
-        if (wide) {
-            el.setParaInsigniaLarge();
-            el.addPara("Peerless", PeerlessData.GOLD, 0f);
-            el.setParaFontDefault();
-            el.addSpacer(6f);
-        }
-        LabelAPI line = el.addPara("Peerless skill points: %s", 0f, Misc.getTextColor(),
-                available > 0 ? PeerlessData.GOLD : Misc.getGrayColor(), "" + available);
-        el.addTooltipToPrevious(new BoxTooltip(), TooltipMakerAPI.TooltipLocation.BELOW);
-        if (line == null) return;
 
-        if (wide) {
-            el.addSpacer(6f);
-            el.addPara("Effects: %s", 0f, Misc.getGrayColor(), Misc.getHighlightColor(),
-                    Settings.originalEffects() ? "Original" : "Renewed");
-            el.addPara(sourceLine(), Misc.getGrayColor(), 3f);
-            el.addSpacer(8f);
-            if (!pending.isEmpty()) {
-                List<String> names = new ArrayList<>();
-                for (String id : pending) names.add(Global.getSettings().getSkillSpec(id).getName());
-                el.addPara("Making Peerless: %s", 0f, Misc.getTextColor(), PeerlessData.GOLD, String.join(", ", names));
-            } else {
-                el.addPara("Trained: %s of 14", 0f, Misc.getGrayColor(), PeerlessData.GOLD,
-                        "" + PeerlessData.trained().size());
-            }
-        }
+        // The points, as one more line under "-Level N", in the same style.
+        CustomPanelAPI line = Global.getSettings().createCustom(POINTS_W, POINTS_H, null);
+        subpanel.addComponent(line).inTL(POINTS_X, POINTS_Y);
+        TooltipMakerAPI text = line.createUIElement(POINTS_W, POINTS_H, false);
+        line.addUIElement(text).inTL(0f, 0f);
+        text.addPara("-Peerless skill points: %s", 0f, Misc.getGrayColor(),
+                available > 0 ? PeerlessData.GOLD : Misc.getHighlightColor(), "" + available);
+        text.addTooltipToPrevious(new PointsTooltip(), TooltipMakerAPI.TooltipLocation.RIGHT);
 
-        if (!pending.isEmpty()) {
-            Color base = PeerlessData.GOLD;
-            Color dark = Misc.scaleColorOnly(base, 0.3f);
-            float bw = wide ? 100f : 70f;
-            ButtonAPI save = el.addButton("Save", BoxPlugin.SAVE, base, dark, Alignment.MID, CutStyle.ALL, bw, 24f, wide ? 10f : 4f);
-            ButtonAPI cancel = el.addButton("Cancel", BoxPlugin.CANCEL, Misc.getBasePlayerColor(), Misc.getDarkPlayerColor(),
-                    Alignment.MID, CutStyle.ALL, bw, 24f, 0f);
-            if (wide) {
-                cancel.getPosition().rightOfTop(save, 10f);
-            } else {
-                save.getPosition().inTL(w - 16f - bw * 2f - 6f, 0f);
-                cancel.getPosition().rightOfTop(save, 6f);
-            }
-        }
-    }
-
-    private static String sourceLine() {
-        if (Settings.useXp()) {
-            return String.format("From experience past the level cap: %.1f of %d bars",
-                    PeerlessData.xpBars(), Settings.xpBarsPerPoint());
-        }
-        return "From achievements, once per campaign";
+        // Save and Cancel, only while a change waits, under the Combat icon.
+        if (pending.isEmpty()) return;
+        float h = BUTTON_H * 2f + 4f;
+        CustomPanelAPI buttons = Global.getSettings().createCustom(BUTTON_W, h, new ButtonsPlugin(panel, subpanel));
+        subpanel.addComponent(buttons).inTL(BUTTONS_X, BUTTONS_Y);
+        TooltipMakerAPI el = buttons.createUIElement(BUTTON_W, h, false);
+        buttons.addUIElement(el).inTL(0f, 0f);
+        Color gold = PeerlessData.GOLD;
+        ButtonAPI save = el.addButton("Save", ButtonsPlugin.SAVE, gold, Misc.scaleColorOnly(gold, 0.3f),
+                Alignment.MID, CutStyle.ALL, BUTTON_W, BUTTON_H, 0f);
+        save.getPosition().inTL(0f, 0f);
+        ButtonAPI cancel = el.addButton("Cancel", ButtonsPlugin.CANCEL, Misc.getBasePlayerColor(), Misc.getDarkPlayerColor(),
+                Alignment.MID, CutStyle.ALL, BUTTON_W, BUTTON_H, 0f);
+        cancel.getPosition().belowLeft(save, 4f);
     }
 
     private static void save(SCPlayerPanel panel, CustomPanelAPI subpanel) {
@@ -222,47 +191,16 @@ public final class PeerlessUi {
         rebuild(panel, subpanel);
     }
 
-    private static final class BoxPlugin extends BaseCustomUIPanelPlugin {
+    private static final class ButtonsPlugin extends BaseCustomUIPanelPlugin {
         static final String SAVE = "psr_save";
         static final String CANCEL = "psr_cancel";
 
         private final SCPlayerPanel panel;
         private final CustomPanelAPI subpanel;
-        private PositionAPI position;
 
-        BoxPlugin(SCPlayerPanel panel, CustomPanelAPI subpanel) {
+        ButtonsPlugin(SCPlayerPanel panel, CustomPanelAPI subpanel) {
             this.panel = panel;
             this.subpanel = subpanel;
-        }
-
-        @Override
-        public void positionChanged(PositionAPI position) {
-            this.position = position;
-        }
-
-        @Override
-        public void renderBelow(float alphaMult) {
-            if (position == null) return;
-            float x = position.getX();
-            float y = position.getY();
-            float w = position.getWidth();
-            float h = position.getHeight();
-            Color gold = PeerlessData.GOLD;
-            GL11.glPushMatrix();
-            GL11.glDisable(GL11.GL_TEXTURE_2D);
-            GL11.glEnable(GL11.GL_BLEND);
-            GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-            GL11.glColor4f(0f, 0f, 0f, 0.55f * alphaMult);
-            GL11.glRectf(x, y, x + w, y + h);
-            GL11.glColor4f(gold.getRed() / 255f, gold.getGreen() / 255f, gold.getBlue() / 255f, 0.8f * alphaMult);
-            GL11.glLineWidth(1f);
-            GL11.glBegin(GL11.GL_LINE_LOOP);
-            GL11.glVertex2f(x + 0.5f, y + 0.5f);
-            GL11.glVertex2f(x + w - 0.5f, y + 0.5f);
-            GL11.glVertex2f(x + w - 0.5f, y + h - 0.5f);
-            GL11.glVertex2f(x + 0.5f, y + h - 0.5f);
-            GL11.glEnd();
-            GL11.glPopMatrix();
         }
 
         @Override
@@ -272,7 +210,7 @@ public final class PeerlessUi {
         }
     }
 
-    private static final class BoxTooltip extends BaseTooltipCreator {
+    private static final class PointsTooltip extends BaseTooltipCreator {
         @Override
         public float getTooltipWidth(Object tooltipParam) {
             return 420f;
@@ -286,8 +224,9 @@ public final class PeerlessUi {
             tooltip.addPara("Click a Peerless skill to undo it and get its point back. "
                     + "A skill that loses Elite also loses Peerless, and the point comes back.", 10f);
             if (Settings.useXp()) {
-                tooltip.addPara("You earn a point for every %s full experience bars past the level cap.", 10f,
-                        Misc.getHighlightColor(), "" + Settings.xpBarsPerPoint());
+                tooltip.addPara("You earn a point for every %s full experience bars past the level cap. So far: %s.", 10f,
+                        Misc.getHighlightColor(), "" + Settings.xpBarsPerPoint(),
+                        String.format("%.1f of %d bars", PeerlessData.xpBars(), Settings.xpBarsPerPoint()));
             } else {
                 String counted = "";
                 try {
@@ -309,6 +248,9 @@ public final class PeerlessUi {
                         Math.round(fraction * 100f) + "%");
             }
             tooltip.addPara("Earned in this campaign: %s", 10f, PeerlessData.GOLD, "" + PeerlessData.earnedTotal());
+            tooltip.addPara("Peerless skills: %s of 14", 3f, PeerlessData.GOLD, "" + PeerlessData.trained().size());
+            tooltip.addPara("Effects: %s (LunaLib settings)", 10f, Misc.getGrayColor(), Misc.getHighlightColor(),
+                    Settings.originalEffects() ? "Original" : "Renewed");
         }
     }
 }
