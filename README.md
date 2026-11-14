@@ -32,9 +32,8 @@ are optional. Do not run it together with the first Peerless Skills mod.
 
 ## Effects
 
-LunaLib setting **Peerless effects**: Renewed (default) or Original (the original effects: Starsector
-before 0.95 had Peerless skills, and the Peerless Skills mod only brought them back). Effects apply to the
-ship the character pilots, like the base skills.
+LunaLib setting **Peerless effects**: Renewed (default) or Original. Effects apply to the ship the
+character pilots, like the base skills.
 
 | Skill | Renewed | Original |
 | --- | --- | --- |

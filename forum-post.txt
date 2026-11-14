@@ -41,7 +41,7 @@ You buy it with Peerless skill points on the Second-in-Command Character screen 
 [li][b]Ordnance Expertise:[/b] weapons cost 1 / 2 / 4 fewer ordnance points (small / medium / large).[/li]
 [li][b]Polarized Armor:[/b] after 3 seconds without taking damage, armor rebuilds to half of each cell's full value.[/li]
 [li][b]Missile Specialization:[/b] guided missiles turn 50% faster; unguided ones slowly steer toward a target.[/li]
-[li]A LunaLib setting switches to the Original effects: Starsector had Peerless skills before 0.95.[/li]
+[li]A LunaLib setting switches to the Original effects.[/li]
 [/list]
 
 [hr][center][size=12pt][b]Officers[/b][/size][/center][hr]
@@ -74,6 +74,8 @@ This mod is under the CC0 (Creative Commons Zero) License, allowing you to do wh
 [/spoiler]
 
 [spoiler=Version log]
+[b]1.0.1[/b]
+[list][li]Shorter text for the Original effects setting.[/li][/list]
 [b]1.0.0[/b]
 [list][li]Peerless skills now show a gold diamond instead of the Elite stars on the Character screen.[/li]
 [li]Officers' Peerless skills now show in the skill tooltips of the game's own officer screens.[/li]

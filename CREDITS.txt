@@ -1,7 +1,6 @@
 Peerless Skills - Renewed
 
-- Peerless skills come from Starsector itself (Fractal Softworks): the game had them before 0.95.
-- Peerless Skills by c4tntnitro-netizen (MIT) brought them back as a mod; this mod rebuilt the fourteen
-  Original effects from that mod's descriptions. No code was copied.
+- Peerless Skills by c4tntnitro-netizen (MIT): the Original effects were rebuilt from that mod's
+  descriptions. No code was copied.
 - Second-in-Command and PatchLib by Lukas04: this mod draws its Peerless points, icons and tooltip
   section on Second-in-Command's Character screen through PatchLib hooks, without changing either mod.

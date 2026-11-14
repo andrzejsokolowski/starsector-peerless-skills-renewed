@@ -1,3 +1,6 @@
+Version 1.0.1 (2026-11-14)
+- Shorter text for the Original effects setting.
+
 Version 1.0.0 (2026-11-14)
 - Peerless skills now show a gold diamond instead of the Elite stars on the Character screen.
 - Officers' Peerless skills now show in the skill tooltips of the game's own officer screens.
