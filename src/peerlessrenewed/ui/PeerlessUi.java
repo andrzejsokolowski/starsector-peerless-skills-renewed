@@ -16,9 +16,11 @@ import com.fs.starfarer.api.ui.BaseTooltipCreator;
 import com.fs.starfarer.api.ui.ButtonAPI;
 import com.fs.starfarer.api.ui.CustomPanelAPI;
 import com.fs.starfarer.api.ui.CutStyle;
+import com.fs.starfarer.api.ui.LabelAPI;
 import com.fs.starfarer.api.ui.TooltipMakerAPI;
 import com.fs.starfarer.api.util.Misc;
 
+import peerlessrenewed.OfficerPeerless;
 import peerlessrenewed.PeerlessData;
 import peerlessrenewed.PeerlessSkill;
 import peerlessrenewed.Settings;
@@ -45,8 +47,9 @@ public final class PeerlessUi {
      */
     private static final float POINTS_X = 0f;
     private static final float POINTS_Y = 246f;
-    private static final float POINTS_W = 260f;
+    private static final float POINTS_W = 278f;
     private static final float POINTS_H = 18f;
+    private static final float OFFICERS_W = 68f;
 
     /** Under the Combat icon (x 328 to 424, y 76 to 176) inside the combat frame (it ends at y 237). */
     private static final float BUTTONS_X = 331f;
@@ -148,13 +151,22 @@ public final class PeerlessUi {
         int available = available();
 
         // The points, as one more line under "-Level N", in the same style.
-        CustomPanelAPI line = Global.getSettings().createCustom(POINTS_W, POINTS_H, null);
+        CustomPanelAPI line = Global.getSettings().createCustom(POINTS_W, POINTS_H, new LinePlugin(panel, subpanel));
         subpanel.addComponent(line).inTL(POINTS_X, POINTS_Y);
         TooltipMakerAPI text = line.createUIElement(POINTS_W, POINTS_H, false);
         line.addUIElement(text).inTL(0f, 0f);
-        text.addPara("-Peerless skill points: %s", 0f, Misc.getGrayColor(),
+        LabelAPI label = text.addPara("-Peerless skill points: %s", 0f, Misc.getGrayColor(),
                 available > 0 ? PeerlessData.GOLD : Misc.getHighlightColor(), "" + available);
         text.addTooltipToPrevious(new PointsTooltip(), TooltipMakerAPI.TooltipLocation.RIGHT);
+        label.getPosition().inTL(0f, 0f);
+
+        // Officers button, when officer Peerless is on in LunaLib.
+        if (OfficerPeerless.enabled()) {
+            ButtonAPI officers = text.addButton("Officers", LinePlugin.OFFICERS, PeerlessData.GOLD,
+                    Misc.scaleColorOnly(PeerlessData.GOLD, 0.3f), Alignment.MID, CutStyle.ALL, OFFICERS_W, POINTS_H, 0f);
+            officers.getPosition().inTL(POINTS_W - OFFICERS_W, 0f);
+            text.addTooltipToPrevious(new OfficersTooltip(), TooltipMakerAPI.TooltipLocation.RIGHT);
+        }
 
         // Save and Cancel, only while a change waits, under the Combat icon.
         if (pending.isEmpty()) return;
@@ -207,6 +219,46 @@ public final class PeerlessUi {
         public void buttonPressed(Object buttonId) {
             if (SAVE.equals(buttonId)) save(panel, subpanel);
             else if (CANCEL.equals(buttonId)) cancel(panel, subpanel);
+        }
+    }
+
+    /** The points line: its Officers button opens the officer window on Second-in-Command's menu panel. */
+    private static final class LinePlugin extends BaseCustomUIPanelPlugin {
+        static final String OFFICERS = "psr_officers";
+
+        private final SCPlayerPanel panel;
+        private final CustomPanelAPI subpanel;
+
+        LinePlugin(SCPlayerPanel panel, CustomPanelAPI subpanel) {
+            this.panel = panel;
+            this.subpanel = subpanel;
+        }
+
+        @Override
+        public void buttonPressed(Object buttonId) {
+            if (!OFFICERS.equals(buttonId)) return;
+            CustomPanelAPI menuPanel;
+            try {
+                menuPanel = panel.getMenu().getPanel();
+            } catch (Throwable t) {
+                log.error("Peerless Skills - Renewed: no Second-in-Command menu panel for the officer window", t);
+                return;
+            }
+            Global.getSoundPlayer().playUISound("ui_button_pressed", 1f, 1f);
+            OfficerWindow.open(menuPanel, () -> rebuild(panel, subpanel));
+        }
+    }
+
+    private static final class OfficersTooltip extends BaseTooltipCreator {
+        @Override
+        public float getTooltipWidth(Object tooltipParam) {
+            return 360f;
+        }
+
+        @Override
+        public void createTooltip(TooltipMakerAPI tooltip, boolean expanded, Object tooltipParam) {
+            tooltip.addPara("Make your officers' Elite combat skills Peerless. Each costs %s.", 0f,
+                    Misc.getTextColor(), Misc.getHighlightColor(), OfficerPeerless.costText(Settings.officerCost()));
         }
     }
 

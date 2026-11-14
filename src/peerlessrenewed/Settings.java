@@ -53,6 +53,40 @@ public final class Settings {
         }
     }
 
+    /** What officer Peerless upgrades cost. OFF turns officer Peerless off. */
+    public enum OfficerCost { OFF, PEERLESS_POINTS, STORY_POINTS, CREDITS }
+
+    public static OfficerCost officerCost() {
+        try {
+            String value = LunaSettings.getString(MOD_ID, "psr_officers");
+            if (value == null) return OfficerCost.OFF;
+            String v = value.trim().toLowerCase();
+            if (v.startsWith("peerless")) return OfficerCost.PEERLESS_POINTS;
+            if (v.startsWith("story")) return OfficerCost.STORY_POINTS;
+            if (v.startsWith("credit")) return OfficerCost.CREDITS;
+            return OfficerCost.OFF;
+        } catch (Throwable t) {
+            return OfficerCost.OFF;
+        }
+    }
+
+    public static int officerStoryPoints() {
+        return intSetting("psr_officerStoryPoints", 2, 1);
+    }
+
+    public static int officerCredits() {
+        return intSetting("psr_officerCredits", 100000, 0);
+    }
+
+    private static int intSetting(String key, int fallback, int min) {
+        try {
+            Integer value = LunaSettings.getInt(MOD_ID, key);
+            return value == null ? fallback : Math.max(min, value);
+        } catch (Throwable t) {
+            return fallback;
+        }
+    }
+
     public static boolean announce() {
         return flag("psr_notify", true);
     }

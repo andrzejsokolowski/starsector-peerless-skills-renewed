@@ -26,3 +26,10 @@ PSR-1 holds Andrzej's original request word for word.
 - State lives in sector persistent data under `psr_*` keys, plain Java types only.
 - Achievements - Renewed is optional: only `points/AchievementPoints` may name it (build check).
   Achievements are profile-wide, so it pays when `Achievements.progress(id) >= goal` in this campaign.
+- Weapon OP costs are read from `variant.getStatsForOpCosts()`, which only hull mods change. Ordnance
+  Expertise sets the cut there too (fixed id `psr_peerless_ordnance`) and clears it from other fleet ships
+  whose captain lacks it.
+- Officers (optional, LunaLib `psr_officers`): `OfficerPeerless` keeps each officer's Peerless skills and
+  what was paid (`psr_officers`, `psr_officerPaid`); officers with any get the same hidden skill.
+  `ui/OfficerWindow` is the pop-up, opened from the Officers button on the points line and added to
+  Second-in-Command's menu panel like its own pop-ups.

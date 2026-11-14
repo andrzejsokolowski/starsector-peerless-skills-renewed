@@ -3,7 +3,7 @@
   "name": "Peerless Skills - Renewed",
   "author": "Oddisz",
   "utility": "false",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "A third level past Elite for your own combat skills, bought with Peerless skill points on the Second-in-Command character screen. Points come from achievements (Achievements - Renewed) or from experience past the level cap.",
   "gameVersion": "0.98a-RC8",
   "jars": ["jars/PeerlessSkillsRenewed.jar"],

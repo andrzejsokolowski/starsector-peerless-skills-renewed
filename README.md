@@ -38,15 +38,15 @@ Peerless Skills mod). Effects apply to the ship you pilot, like the base skills.
 | --- | --- | --- |
 | Helmsmanship | Accelerating backwards is twice as fast. | System use gives a speed burst of +100% top speed (at most +100) fading over 1 s, with doubled acceleration and turning. |
 | Combat Endurance | Kept: once per battle, at 10% hull the hull cannot drop further for 5 s. | same |
-| Impact Mitigation | Projectiles and missiles hitting armor or hull deal 20 less damage. | +100% ship mass. |
+| Impact Mitigation | Every projectile or missile that hits your armor or hull deals 20 less damage, before armor reduction. | +100% ship mass. |
 | Damage Control | Kept: engines and weapons repair faster the higher your combat readiness. | same |
 | Field Modulation | Kept: the first overload each battle is cancelled, the ship vents if it can, +200% maneuverability fading over 5 s. | same |
-| Target Analysis | Every enemy ship has one armor cell with no armor: a weak spot. | Hits on armor make it decay over 5 s (10% of the hit, at most 100). |
-| Systems Expertise | System use gives +50% top speed and maneuverability, fading over 3 s. | System use halves hull damage for 0.25 s, fading out by 0.5 s. |
+| Target Analysis | Every enemy ship starts with a weak spot on its outer edge: 1 to 4 neighboring armor cells (frigate to capital) with no armor. | Hits on armor make it decay over 5 s (10% of the hit, at most 100). |
+| Systems Expertise | System use gives +50% top speed and maneuverability, fading over 5 s. | System use halves hull damage for 0.25 s, fading out by 0.5 s. |
 | Point Defense | PD hits on missiles have a 10% chance to disarm the warhead. | PD hits on armor or hull add EMP equal to 10% of their damage. |
 | Energy Weapon Mastery | Energy weapons deal 25% more damage to armor. | The energy damage bonus fades out by 2000 range instead of 1000. |
 | Ballistic Mastery | Kept: while firing, weapons build up to perfect autofire accuracy and no recoil over 5 s. | same |
-| Gunnery Implants | Weapons with less range than your longest-range weapon gain 10% of its base range on top of their final range. | +5% maximum fleet electronic warfare penalty. |
+| Gunnery Implants | Ballistic and energy weapons with less base range than your longest-range one gain 10% of that base range on top of their final range. | +5% maximum fleet electronic warfare penalty. |
 | Ordnance Expertise | Weapons cost 1 / 2 / 4 fewer ordnance points (small / medium / large). | +0.75 flux dissipation and +10 capacity per ordnance point spent on hull mods. |
 | Polarized Armor | After 3 s without armor or hull damage, armor rebuilds to 50% of each cell's full value. | Engines and weapons repair twice as fast while venting. |
 | Missile Specialization | Guided missiles turn 50% faster; unguided ones slowly steer toward a target. | Large launchers that ran dry reload 5% of their ammo per minute (at least 1). |
@@ -54,12 +54,22 @@ Peerless Skills mod). Effects apply to the ship you pilot, like the base skills.
 Ordnance Expertise (Renewed) lowers weapon costs only while you captain the ship: moving to another
 ship can leave the old one over its ordnance point limit.
 
+## Officers
+
+Optional, LunaLib setting **Peerless for officers**: Off (default), Peerless points, Story points or
+Credits. When it is on, an **Officers** button next to your Peerless skill points opens a window with
+every officer in your fleet and their Elite combat skills. Click one to make it Peerless and pay its cost
+(1 Peerless skill point, 2 story points or 100,000 credits by default; the last two can be changed).
+Click a Peerless one to undo it and get back exactly what it cost. An officer whose skill loses Elite also
+loses Peerless and gets the payment back. Officers with Peerless skills carry the same hidden skill as you;
+with the setting Off their Peerless skills do nothing.
+
 ## Console commands
 
 - `PeerlessAddPoints [amount]` gives points (1 by default).
 - `PeerlessStatus` shows points, Peerless skills and what has paid out in this campaign.
 - `PeerlessUnlockAll` makes all fourteen combat skills Elite and Peerless, for testing.
-- `PeerlessRefund` removes every Peerless upgrade and gives the points back.
+- `PeerlessRefund` removes every Peerless upgrade, yours and your officers', and gives back what they cost.
 
 ## Removing the mod
 

@@ -1,4 +1,4 @@
 id,name,order,tier,reqPoints,reqPointsPerExtraSkill,description,author,combat officer,admiral,admin,tags,icon,
 # Peerless Skills - Renewed: one hidden skill on the player that carries the Peerless effects. It stays npc_only so no skill screen lists it.,,,,,,,,,,,,,
 aptitude_psr_peerless,,0,,,,,,,,,npc_only,graphics/icons/skills/category_combat.png,
-psr_peerless,Peerless,99501,1,0,,The Peerless level of your combat skills.,Peerless Skills - Renewed,,,,npc_only,graphics/icons/skills/helmsmanship.png,
+psr_peerless,Peerless,99501,1,0,,The Peerless level of this character's Elite combat skills.,Peerless Skills - Renewed,,,,npc_only,graphics/icons/skills/helmsmanship.png,

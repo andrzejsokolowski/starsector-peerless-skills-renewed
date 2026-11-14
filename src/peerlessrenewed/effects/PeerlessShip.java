@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
 
+import org.apache.log4j.Logger;
 import org.lwjgl.util.vector.Vector2f;
 
 import com.fs.starfarer.api.Global;
@@ -46,6 +47,8 @@ import peerlessrenewed.PeerlessSkill;
 public class PeerlessShip implements AdvanceableListener, DamageDealtModifier, DamageTakenModifier,
         HullDamageAboutToBeTakenListener, WeaponRangeModifier {
 
+    private static final Logger log = Global.getLogger(PeerlessShip.class);
+
     private static final String ID = "psr_peerless";
     private static final String ID_HELM = ID + "_helm";
     private static final String ID_SYS = ID + "_sys";
@@ -56,6 +59,7 @@ public class PeerlessShip implements AdvanceableListener, DamageDealtModifier, D
     private static final String ID_IM = ID + "_im";
     private static final String ID_EWM = ID + "_ewm";
     private static final String WEAK_SPOTS = "psr_weakSpots";
+    private static final float SYS_SECONDS = 5f;
 
     private static final Color ENDURING = new Color(255, 165, 90);
 
@@ -227,9 +231,9 @@ public class PeerlessShip implements AdvanceableListener, DamageDealtModifier, D
 
     private void systemsExpertise(MutableShipStatsAPI stats, float amount, boolean systemStarted) {
         if (renewed(PeerlessSkill.SYSTEMS_EXPERTISE)) {
-            if (systemStarted) sysTimer = 3f;
+            if (systemStarted) sysTimer = SYS_SECONDS;
             if (sysTimer > 0f) {
-                float percent = 50f * sysTimer / 3f;
+                float percent = 50f * sysTimer / SYS_SECONDS;
                 stats.getMaxSpeed().modifyPercent(ID_SYS, percent);
                 stats.getAcceleration().modifyPercent(ID_SYS, percent);
                 stats.getDeceleration().modifyPercent(ID_SYS, percent);
@@ -395,29 +399,107 @@ public class PeerlessShip implements AdvanceableListener, DamageDealtModifier, D
         }
     }
 
+    /** Cells in a weak spot: frigate 1, destroyer 2, cruiser 3, capital 4. */
+    static int weakSpotSize(ShipAPI target) {
+        switch (target.getHullSize()) {
+            case CAPITAL_SHIP: return 4;
+            case CRUISER: return 3;
+            case DESTROYER: return 2;
+            default: return 1;
+        }
+    }
+
+    /**
+     * Drains a few neighboring armor cells to zero. It starts at a random cell on the outer edge of the hull
+     * (a cell over the hull with a neighbor off the hull) and grows to the nearest cells over the hull.
+     */
     private void makeWeakSpot(CombatEngineAPI engine, ShipAPI target) {
         ArmorGridAPI grid = target.getArmorGrid();
         if (grid == null) return;
         float[][] cells = grid.getGrid();
-        List<int[]> inside = new ArrayList<>();
-        for (int x = 0; x < cells.length; x++) {
-            for (int y = 0; y < cells[x].length; y++) {
+        int w = cells.length;
+        if (w == 0) return;
+        int h = cells[0].length;
+        boolean[][] on = new boolean[w][h];
+        int onCount = 0;
+        for (int x = 0; x < w; x++) {
+            for (int y = 0; y < h; y++) {
                 if (cells[x][y] <= 0f) continue;
                 Vector2f at = grid.getLocation(x, y);
-                if (at != null && target.getExactBounds() != null && isInside(target, at)) inside.add(new int[] {x, y});
-            }
-        }
-        if (inside.isEmpty()) {
-            for (int x = 1; x < cells.length - 1; x++) {
-                for (int y = 1; y < cells[x].length - 1; y++) {
-                    if (cells[x][y] > 0f) inside.add(new int[] {x, y});
+                if (at != null && isInside(target, at)) {
+                    on[x][y] = true;
+                    onCount++;
                 }
             }
         }
-        if (inside.isEmpty()) return;
-        int[] cell = inside.get((int) (Math.random() * inside.size()));
-        grid.setArmorValue(cell[0], cell[1], 0f);
+        if (onCount == 0) {
+            // Bounds check failed for every cell: use the grid without its outer ring.
+            for (int x = 1; x < w - 1; x++) {
+                for (int y = 1; y < h - 1; y++) {
+                    if (cells[x][y] > 0f) {
+                        on[x][y] = true;
+                        onCount++;
+                    }
+                }
+            }
+        }
+        if (onCount == 0) return;
+
+        int[][] dirs = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+        List<int[]> edge = new ArrayList<>();
+        List<int[]> all = new ArrayList<>();
+        for (int x = 0; x < w; x++) {
+            for (int y = 0; y < h; y++) {
+                if (!on[x][y]) continue;
+                all.add(new int[] {x, y});
+                for (int[] d : dirs) {
+                    int nx = x + d[0];
+                    int ny = y + d[1];
+                    if (nx < 0 || ny < 0 || nx >= w || ny >= h || !on[nx][ny]) {
+                        edge.add(new int[] {x, y});
+                        break;
+                    }
+                }
+            }
+        }
+        List<int[]> pool = edge.isEmpty() ? all : edge;
+        int[] seed = pool.get((int) (Math.random() * pool.size()));
+
+        // Grow from the seed through touching cells, edge cells first so the spot stays on the outside.
+        int want = weakSpotSize(target);
+        boolean[][] taken = new boolean[w][h];
+        List<int[]> spot = new ArrayList<>();
+        spot.add(seed);
+        taken[seed[0]][seed[1]] = true;
+        while (spot.size() < want) {
+            int[] best = null;
+            float bestScore = Float.MAX_VALUE;
+            for (int[] c : spot) {
+                for (int[] d : dirs) {
+                    int nx = c[0] + d[0];
+                    int ny = c[1] + d[1];
+                    if (nx < 0 || ny < 0 || nx >= w || ny >= h || !on[nx][ny] || taken[nx][ny]) continue;
+                    float score = (isEdge(on, nx, ny) ? 0f : 10f)
+                            + Math.abs(nx - seed[0]) + Math.abs(ny - seed[1]) + (float) Math.random() * 0.5f;
+                    if (score < bestScore) {
+                        bestScore = score;
+                        best = new int[] {nx, ny};
+                    }
+                }
+            }
+            if (best == null) break;
+            taken[best[0]][best[1]] = true;
+            spot.add(best);
+        }
+        for (int[] c : spot) grid.setArmorValue(c[0], c[1], 0f);
         target.syncWithArmorGridState();
+    }
+
+    private static boolean isEdge(boolean[][] on, int x, int y) {
+        int w = on.length;
+        int h = on[0].length;
+        return x == 0 || y == 0 || x == w - 1 || y == h - 1
+                || !on[x + 1][y] || !on[x - 1][y] || !on[x][y + 1] || !on[x][y - 1];
     }
 
     private static boolean isInside(ShipAPI target, Vector2f point) {
@@ -717,20 +799,39 @@ public class PeerlessShip implements AdvanceableListener, DamageDealtModifier, D
     @Override
     public float getWeaponRangeFlatMod(ShipAPI ship, WeaponAPI weapon) {
         if (!renewed(PeerlessSkill.GUNNERY_IMPLANTS) || !countsForRange(weapon)) return 0f;
-        if (longestBaseRange < 0f) {
-            float longest = 0f;
-            for (WeaponAPI other : this.ship.getAllWeapons()) {
-                if (countsForRange(other)) longest = Math.max(longest, other.getSpec().getMaxRange());
-            }
-            longestBaseRange = longest;
-        }
+        if (longestBaseRange < 0f) longestBaseRange = findLongestBaseRange();
         if (weapon.getSpec().getMaxRange() >= longestBaseRange) return 0f;
         return 0.1f * longestBaseRange;
     }
 
+    /** The longest base range among the ship's own ballistic and energy weapons (the range in the weapon's stats). */
+    private float findLongestBaseRange() {
+        float longest = 0f;
+        String from = "none";
+        for (WeaponAPI other : this.ship.getAllWeapons()) {
+            if (!countsForRange(other)) continue;
+            float range = other.getSpec().getMaxRange();
+            if (range > longest) {
+                longest = range;
+                from = other.getId();
+            }
+        }
+        if (this.ship.getCaptain() != null && this.ship.getCaptain().isPlayer()) {
+            log.info("Peerless Skills - Renewed: Gunnery Implants on " + this.ship.getHullSpec().getHullName()
+                    + ": longest base range " + Math.round(longest) + " (" + from + "), shorter weapons get +"
+                    + Math.round(0.1f * longest));
+        }
+        return longest;
+    }
+
+    /** Ballistic and energy weapons in real weapon slots: no missiles, bays, decorations, system or hidden weapons. */
     private static boolean countsForRange(WeaponAPI weapon) {
         if (weapon == null || weapon.getSpec() == null || weapon.isDecorative()) return false;
-        if (weapon.getType() == WeaponType.MISSILE || weapon.getType() == WeaponType.LAUNCH_BAY) return false;
-        return weapon.getSlot() == null || !weapon.getSlot().isSystemSlot();
+        if (weapon.getType() != WeaponType.BALLISTIC && weapon.getType() != WeaponType.ENERGY) return false;
+        if (weapon.getSpec().getAIHints() != null && weapon.getSpec().getAIHints().contains(WeaponAPI.AIHints.SYSTEM)) return false;
+        if (weapon.getSpec().getMaxRange() <= 0f) return false;
+        if (weapon.getSlot() == null) return false;
+        return !weapon.getSlot().isSystemSlot() && !weapon.getSlot().isHidden() && !weapon.getSlot().isDecorative()
+                && weapon.getSlot().isWeaponSlot();
     }
 }

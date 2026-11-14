@@ -9,6 +9,8 @@ import peerlessrenewed.points.AchievementPoints;
 
 public class PeerlessStatus implements BaseCommand {
 
+    private static final char NL = (char) 10;
+
     @Override
     public CommandResult runCommand(String args, CommandContext context) {
         if (!context.isInCampaign()) {
@@ -34,6 +36,14 @@ public class PeerlessStatus implements BaseCommand {
             } catch (Throwable t) {
                 out.append("  Achievements - Renewed could not be read\n");
             }
+        }
+        out.append(NL).append("Officer Peerless: ").append(peerlessrenewed.Settings.officerCost()).append(NL);
+        for (com.fs.starfarer.api.characters.PersonAPI person : peerlessrenewed.OfficerPeerless.fleetOfficers()) {
+            java.util.Set<String> set = peerlessrenewed.OfficerPeerless.trained(person);
+            if (set.isEmpty()) continue;
+            java.util.List<String> names = new java.util.ArrayList<>();
+            for (String id : set) names.add(com.fs.starfarer.api.Global.getSettings().getSkillSpec(id).getName());
+            out.append("  ").append(person.getNameString()).append(": ").append(String.join(", ", names)).append(NL);
         }
         Console.showMessage(out.toString());
         return CommandResult.SUCCESS;

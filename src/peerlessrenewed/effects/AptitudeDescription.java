@@ -10,7 +10,7 @@ public class AptitudeDescription implements DescriptionSkillEffect {
 
     @Override
     public String getString() {
-        return "The Peerless level of your combat skills.";
+        return "The Peerless level of this character's Elite combat skills.";
     }
 
     @Override

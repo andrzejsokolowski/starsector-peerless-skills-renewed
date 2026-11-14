@@ -7,6 +7,7 @@ import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.characters.MutableCharacterStatsAPI;
 import com.fs.starfarer.api.plugins.LevelupPlugin;
 
+import peerlessrenewed.OfficerPeerless;
 import peerlessrenewed.PeerlessData;
 import peerlessrenewed.Settings;
 
@@ -22,6 +23,7 @@ public class PointTracker implements EveryFrameScript {
     private float achievementTimer = 0f;
     private float checkTimer = 0f;
     private Boolean lastOriginal = null;
+    private boolean lastOfficers = false;
     private boolean achievementsFailed = false;
 
     @Override
@@ -43,11 +45,13 @@ public class PointTracker implements EveryFrameScript {
             checkTimer = 0.5f;
             PeerlessData.ensureHiddenSkill();
             boolean original = Settings.originalEffects();
+            boolean officers = OfficerPeerless.enabled();
             boolean refunded = PeerlessData.refundLostElite();
-            if (refunded || lastOriginal == null || lastOriginal != original) {
-                if (lastOriginal != null || refunded) PeerlessData.refreshEffects();
-                lastOriginal = original;
-            }
+            refunded |= OfficerPeerless.refundLostElite();
+            boolean modeChanged = lastOriginal != null && (lastOriginal != original || lastOfficers != officers);
+            if (refunded || modeChanged) PeerlessData.refreshEffects();
+            lastOriginal = original;
+            lastOfficers = officers;
         }
 
         if (Settings.useXp()) {

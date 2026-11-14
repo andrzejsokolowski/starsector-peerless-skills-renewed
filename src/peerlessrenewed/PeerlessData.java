@@ -38,7 +38,7 @@ public final class PeerlessData {
 
     private PeerlessData() {}
 
-    private static Map<String, Object> data() {
+    static Map<String, Object> data() {
         SectorAPI sector = Global.getSector();
         return sector == null ? null : sector.getPersistentData();
     }
@@ -56,7 +56,7 @@ public final class PeerlessData {
         return value instanceof Integer ? (Integer) value : 0;
     }
 
-    private static void setPoints(int points) {
+    static void setPoints(int points) {
         Map<String, Object> data = data();
         if (data != null) data.put(KEY_POINTS, Math.max(0, points));
     }

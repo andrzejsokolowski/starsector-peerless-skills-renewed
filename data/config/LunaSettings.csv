@@ -6,3 +6,7 @@ psr_useXp,Use experience instead of achievements,Boolean,false,,"Earn Peerless s
 psr_xpBarsPerPoint,Experience bars per point,Int,4,,"How many full experience bars past the level cap make one Peerless skill point. One bar is the experience of one level at the cap.",1,50,
 psr_rate,Peerless point rate,Double,1.0,,"Multiplies every Peerless skill point earned, from achievements and from experience. 1 is normal, 2 doubles, 0.5 halves. Fractions add up until they make a whole point.",0.25,4,
 psr_notify,Message on a new point,Boolean,true,,"Shows a message when you earn a Peerless skill point.",,,
+psr_header_officers,Officers Header,Header,Officers,,,,,
+psr_officers,Peerless for officers,Radio,Off,"Off,Peerless points,Story points,Credits","Lets you make your officers' Elite combat skills Peerless, from the Officers button on the Character screen. Choose what each upgrade costs. Off: officers cannot get Peerless, and the Peerless skills they already have do nothing.",,,
+psr_officerStoryPoints,Story points per officer upgrade,Int,2,,"Story points one officer Peerless skill costs, when officers pay with story points.",1,20,
+psr_officerCredits,Credits per officer upgrade,Int,100000,,"Credits one officer Peerless skill costs, when officers pay with credits.",1000,5000000,
