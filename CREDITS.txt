@@ -1,0 +1,6 @@
+Peerless Skills - Renewed
+
+- Peerless Skills by c4tntnitro-netizen (MIT): the idea of a Peerless level past Elite, and the
+  fourteen Original effects, which this mod rebuilt from that mod's descriptions. No code was copied.
+- Second-in-Command and PatchLib by Lukas04: this mod draws its Peerless box, icons and tooltip
+  section on Second-in-Command's Character screen through PatchLib hooks, without changing either mod.

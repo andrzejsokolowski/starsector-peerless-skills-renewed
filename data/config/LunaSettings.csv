@@ -1,0 +1,8 @@
+fieldID,fieldName,fieldType,defaultValue,secondaryValue,fieldDescription,minValue,maxValue,tab
+psr_header_effects,Effects Header,Header,Peerless effects,,,,,
+psr_effects,Peerless effects,Radio,Renewed,"Renewed,Original","Renewed: this mod's effects (ten skills reworked, four kept from the first Peerless Skills mod). Original: the effects of the first Peerless Skills mod for all fourteen skills. Takes effect in the next battle.",,,
+psr_header_points,Points Header,Header,Peerless skill points,,,,,
+psr_useXp,Use experience instead of achievements,Boolean,false,,"Earn Peerless skill points from experience past the level cap instead of from achievements. Without Achievements - Renewed installed, experience is always used.",,,
+psr_xpBarsPerPoint,Experience bars per point,Int,4,,"How many full experience bars past the level cap make one Peerless skill point. One bar is the experience of one level at the cap.",1,50,
+psr_rate,Peerless point rate,Double,1.0,,"Multiplies every Peerless skill point earned, from achievements and from experience. 1 is normal, 2 doubles, 0.5 halves. Fractions add up until they make a whole point.",0.25,4,
+psr_notify,Message on a new point,Boolean,true,,"Shows a message when you earn a Peerless skill point.",,,

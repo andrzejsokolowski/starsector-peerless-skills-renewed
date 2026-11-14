@@ -1,0 +1,12 @@
+{
+	"id":"aptitude_psr_peerless",
+	"governingAptitude":"psr_peerless",
+	"effectGroups":[
+		{
+			"requiredSkillLevel":0,
+			"effects":[
+				{"type":"DESCRIPTION", "script":"peerlessrenewed.effects.AptitudeDescription"},
+			]
+		},
+	],
+}

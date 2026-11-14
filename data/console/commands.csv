@@ -1,0 +1,5 @@
+command,class,tags,syntax,help
+PeerlessAddPoints,peerlessrenewed.console.PeerlessAddPoints,"peerless_skills_renewed,cheat,campaign",peerlessaddpoints [amount],"Gives Peerless skill points (1 when no amount is given). A negative amount takes unspent points away."
+PeerlessStatus,peerlessrenewed.console.PeerlessStatus,"peerless_skills_renewed,campaign",peerlessstatus,"Shows your Peerless skill points, the trained Peerless skills, the point source and what has paid out in this campaign."
+PeerlessUnlockAll,peerlessrenewed.console.PeerlessUnlockAll,"peerless_skills_renewed,cheat,campaign",peerlessunlockall,"Makes all fourteen combat skills Elite and Peerless without spending points. For testing."
+PeerlessRefund,peerlessrenewed.console.PeerlessRefund,"peerless_skills_renewed,campaign",peerlessrefund,"Removes every Peerless upgrade and gives the points back."

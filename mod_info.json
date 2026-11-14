@@ -1,0 +1,18 @@
+{
+  "id": "peerless_skills_renewed",
+  "name": "Peerless Skills - Renewed",
+  "author": "Oddisz",
+  "utility": "false",
+  "version": "0.1.0",
+  "description": "A third level past Elite for your own combat skills, bought with Peerless skill points on the Second-in-Command character screen. Points come from achievements (Achievements - Renewed) or from experience past the level cap.",
+  "gameVersion": "0.98a-RC8",
+  "jars": ["jars/PeerlessSkillsRenewed.jar"],
+  "modPlugin": "peerlessrenewed.PeerlessModPlugin",
+  "updateCheckURL": "https://raw.githubusercontent.com/andrzejsokolowski/starsector-peerless-skills-renewed/main/peerless_skills_renewed.version",
+  "dependencies": [
+    { "id": "lunalib", "name": "LunaLib" },
+    { "id": "lw_lazylib", "name": "LazyLib" },
+    { "id": "patchlib", "name": "! PatchLib !" },
+    { "id": "second_in_command", "name": "Second-in-Command" }
+  ]
+}

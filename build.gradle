@@ -1,0 +1,197 @@
+plugins {
+    id 'java'
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+
+sourceSets.main.java.srcDirs = ['src']
+
+repositories {
+    mavenCentral()
+}
+
+def mods = "${starsectorPath}/mods"
+
+dependencies {
+    // Starsector core (game classes and bundled libs: lwjgl, json, log4j, ...)
+    compileOnly fileTree(dir: "${starsectorPath}/starsector-core", include: '*.jar')
+    // Required mods, found wherever they are installed.
+    compileOnly fileTree(dir: mods, include: '**/LunaLib.jar')
+    compileOnly fileTree(dir: mods, include: ['**/LazyLib.jar', '**/LazyLib-Kotlin.jar', '**/Kotlin-Runtime.jar'])
+    compileOnly fileTree(dir: mods, include: '**/SecondInCommand.jar')
+    // PatchLib: compile against its API jar only. The same jar carries the annotation processor that
+    // checks the patch method signatures.
+    def patchLibApi = fileTree(dir: mods, include: '**/jars/PatchLibAPI.jar')
+    compileOnly patchLibApi
+    annotationProcessor patchLibApi
+    // Optional: Achievements - Renewed (next door in the workspace) and Console Commands.
+    compileOnly files('../Achievements - Renewed/jars/AchievementsRenewed.jar')
+    compileOnly fileTree(dir: mods, include: '**/lw_Console.jar')
+}
+
+jar {
+    destinationDirectory = file('jars')
+    archiveFileName = 'PeerlessSkillsRenewed.jar'
+}
+
+// Starsector's classloader refuses java.io, java.nio.file and java.lang.reflect to mod code, at class
+// resolution time. Catch a stray use at build time by scanning every compiled class's constant pool.
+tasks.register('checkNoForbiddenApis') {
+    dependsOn tasks.named('classes')
+    outputs.upToDateWhen { false }
+    doLast {
+        def forbidden = ['java/io/', 'java/nio/file/', 'java/lang/reflect/']
+        def offenders = []
+        fileTree(dir: layout.buildDirectory.dir('classes/java/main').get().asFile, include: '**/*.class').each { f ->
+            def text = new String(f.bytes, 'ISO-8859-1')
+            forbidden.each { needle ->
+                if (text.contains(needle)) offenders << "${f.name} references ${needle}"
+            }
+        }
+        if (!offenders.isEmpty()) {
+            throw new GradleException("Forbidden API used (Starsector will refuse to load it):\n  " + offenders.join('\n  '))
+        }
+    }
+}
+
+// Achievements - Renewed is optional: only points/AchievementPoints may name it.
+tasks.register('checkAchievementsIsolated') {
+    dependsOn tasks.named('classes')
+    outputs.upToDateWhen { false }
+    doLast {
+        def offenders = []
+        def root = layout.buildDirectory.dir('classes/java/main').get().asFile
+        fileTree(dir: root, include: '**/*.class').each { f ->
+            def path = root.toPath().relativize(f.toPath()).toString().replace('\\', '/')
+            if (path.startsWith('peerlessrenewed/points/AchievementPoints')) return
+            def text = new String(f.bytes, 'ISO-8859-1')
+            if (text.contains('achievementsrenewed/')) offenders << path
+        }
+        if (!offenders.isEmpty()) {
+            throw new GradleException("Only points/AchievementPoints may refer to Achievements - Renewed:\n  " + offenders.join('\n  '))
+        }
+    }
+}
+
+tasks.named('jar') { dependsOn tasks.named('checkNoForbiddenApis'), tasks.named('checkAchievementsIsolated') }
+
+/** mod_info.json, the .version file and the Version Checker registration must agree. */
+tasks.register('checkVersionMetadata') {
+    doLast {
+        def infoFile = file('mod_info.json')
+        def versionFile = file('peerless_skills_renewed.version')
+        def registrationFile = file('data/config/version/version_files.csv')
+        [infoFile, versionFile, registrationFile].each { metadata ->
+            if (!metadata.isFile()) throw new GradleException("Missing update metadata: ${metadata.name}")
+        }
+        def parser = new groovy.json.JsonSlurper()
+        def info = parser.parse(infoFile, 'UTF-8')
+        def remote = parser.parse(versionFile, 'UTF-8')
+        def parts = ['major', 'minor', 'patch'].collect { remote.modVersion?.get(it)?.toString() }
+        if (parts.any { it == null || !(it ==~ /\d+/) } || info.version != parts.join('.'))
+            throw new GradleException('mod_info.json and peerless_skills_renewed.version must have the same numeric version')
+        def repo = 'https://raw.githubusercontent.com/andrzejsokolowski/starsector-peerless-skills-renewed/main'
+        def masterUrl = "${repo}/peerless_skills_renewed.version"
+        def downloadUrl = 'https://github.com/andrzejsokolowski/starsector-peerless-skills-renewed/releases/latest/download/PeerlessSkillsRenewed.zip'
+        if (info.id != 'peerless_skills_renewed' || info.name != remote.modName)
+            throw new GradleException('Update metadata must identify Peerless Skills - Renewed')
+        if (info.updateCheckURL != masterUrl || remote.masterVersionFile != masterUrl)
+            throw new GradleException('Both update URLs must point to the published .version file')
+        if (remote.directDownloadURL != downloadUrl)
+            throw new GradleException('The update download must point to the PeerlessSkillsRenewed.zip release asset')
+        if (remote.changelogURL != "${repo}/changelog.txt")
+            throw new GradleException('changelogURL must point to changelog.txt on main')
+        if (info.modThreadId?.toString() != remote.modThreadId?.toString())
+            throw new GradleException('mod_info.json and the .version file must name the same forum topic')
+        if (info.gameVersion != remote.starsectorVersion)
+            throw new GradleException('The supported Starsector versions do not match')
+        if (registrationFile.readLines('UTF-8').findAll { !it.trim().isEmpty() } != ['version file', 'peerless_skills_renewed.version'])
+            throw new GradleException('Version Checker must register peerless_skills_renewed.version')
+        if (!file('changelog.txt').getText('UTF-8').startsWith("Version ${info.version} "))
+            throw new GradleException("changelog.txt must start with Version ${info.version}")
+        logger.lifecycle("Update metadata verified for Peerless Skills - Renewed ${info.version}")
+    }
+}
+
+/**
+ * Checks the files that ship: no UTF-8 BOM, every art path exists, LunaLib text has no %, every console
+ * command and skill script names a class that exists.
+ */
+tasks.register('checkReleaseFiles') {
+    doLast {
+        def problems = []
+        fileTree(projectDir) {
+            include 'mod_info.json', '*.version', 'data/**/*.json', 'data/**/*.csv', 'data/**/*.skill'
+        }.each { f ->
+            def bytes = f.bytes
+            if (bytes.length >= 3 && (bytes[0] & 0xFF) == 0xEF && (bytes[1] & 0xFF) == 0xBB && (bytes[2] & 0xFF) == 0xBF)
+                problems << "UTF-8 BOM in ${projectDir.toPath().relativize(f.toPath())}"
+        }
+
+        def core = file("${starsectorPath}/starsector-core")
+        def sic = fileTree(dir: "${starsectorPath}/mods", include: '**/Second-in-Command*/graphics/**').files
+        def artRef = ~/graphics\/[A-Za-z0-9_\-\/. ]+?\.(png|jpg|webp)/
+        fileTree(projectDir) { include 'data/**', 'src/**/*.java' }.each { f ->
+            (f.getText('UTF-8') =~ artRef).each { match ->
+                def path = match[0]
+                def inSic = path.startsWith('graphics/secondInCommand/') && sic.any { it.path.replace('\\', '/').endsWith(path) }
+                if (!file(path).isFile() && !new File(core, path).isFile() && !inSic)
+                    problems << "${projectDir.toPath().relativize(f.toPath())} names missing art ${path}"
+            }
+        }
+        file('data/config/LunaSettings.csv').readLines('UTF-8').eachWithIndex { line, i ->
+            if (line.contains('%')) problems << "LunaSettings.csv line ${i + 1} contains % (crashes LunaLib)"
+        }
+        def luna = new groovy.json.JsonSlurper().parse(file('data/config/LunaSettingsConfig.json'))
+        if (!luna.containsKey('peerless_skills_renewed')) problems << 'LunaLib icon is not keyed by the mod id'
+        luna.each { modId, config -> if (!file(config.iconPath).isFile()) problems << "LunaLib icon missing: ${config.iconPath}" }
+
+        def classExists = { String name ->
+            file("src/${name.replace('.', '/').replaceAll(/\$.*/, '')}.java").isFile()
+        }
+        file('data/console/commands.csv').readLines('UTF-8').drop(1).each { line ->
+            def cls = line.split(',')[1]
+            if (!classExists(cls)) problems << "commands.csv names missing class ${cls}"
+        }
+        fileTree(dir: 'data/characters/skills', include: '*.skill').each { f ->
+            (f.getText('UTF-8') =~ /"script":"(peerlessrenewed[^"]+)"/).each { m ->
+                if (!classExists(m[1])) problems << "${f.name} names missing class ${m[1]}"
+            }
+        }
+        if (problems) throw new GradleException("Release files are not ready:\n  " + problems.join('\n  '))
+        logger.lifecycle('Release files verified')
+    }
+}
+
+tasks.named('check') {
+    dependsOn tasks.named('checkNoForbiddenApis'), tasks.named('checkAchievementsIsolated'),
+            tasks.named('checkVersionMetadata'), tasks.named('checkReleaseFiles')
+}
+
+// Only what the game loads.
+def releaseFiles = copySpec {
+    from(projectDir) {
+        include 'mod_info.json', 'peerless_skills_renewed.version', 'LICENSE', 'CREDITS.txt', 'icon.png'
+        include 'data/**', 'graphics/**', 'jars/PeerlessSkillsRenewed.jar'
+    }
+}
+
+tasks.register('stageRelease', Sync) {
+    dependsOn tasks.named('jar')
+    with releaseFiles
+    into layout.projectDirectory.dir('PeerlessSkillsRenewed')
+}
+
+tasks.register('releaseZip', Zip) {
+    dependsOn tasks.named('stageRelease'), tasks.named('check')
+    destinationDirectory = layout.projectDirectory
+    archiveFileName = 'PeerlessSkillsRenewed.zip'
+    into('PeerlessSkillsRenewed') { with releaseFiles }
+}
