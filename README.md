@@ -49,7 +49,7 @@ character pilots, like the base skills.
 | Ballistic Mastery | Kept: while firing, weapons build up to perfect autofire accuracy and no recoil over 5 s. | same |
 | Gunnery Implants | Ballistic and energy weapons with less base range than your longest-range one gain 10% of that base range on top of their final range. | +5% maximum fleet electronic warfare penalty. |
 | Ordnance Expertise | Weapons cost 1 / 2 / 4 fewer ordnance points (small / medium / large). | +0.75 flux dissipation and +10 capacity per ordnance point spent on hull mods. |
-| Polarized Armor | After 3 s without armor or hull damage, armor rebuilds to 50% of each cell's full value. | Engines and weapons repair twice as fast while venting. |
+| Polarized Armor | After 3 s without armor or hull damage, armor rebuilds to 50% of each cell's full value, only once per cell per battle. | Engines and weapons repair twice as fast while venting. |
 | Missile Specialization | Guided missiles turn 50% faster; unguided ones slowly steer toward a target. | Large launchers that ran dry reload 5% of their ammo per minute (at least 1). |
 
 Ordnance Expertise (Renewed) lowers weapon costs only while you captain the ship: moving to another

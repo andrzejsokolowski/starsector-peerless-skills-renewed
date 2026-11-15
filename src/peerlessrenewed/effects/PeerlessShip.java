@@ -2,6 +2,7 @@ package peerlessrenewed.effects;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -89,6 +90,8 @@ public class PeerlessShip implements AdvanceableListener, DamageDealtModifier, D
     private float lastArmorHit = -999f;
     private float regenTick = 0f;
     private boolean regenerating = false;
+    /** Armor each cell may still rebuild this battle: starts at 50% of full armor, never refills. */
+    private float[][] regenLeft = null;
 
     // target analysis (renewed)
     private float weakSpotTick = 0f;
@@ -358,12 +361,22 @@ public class PeerlessShip implements AdvanceableListener, DamageDealtModifier, D
         float cap = max * 0.5f;
         float gain = max * 0.03f * step;
         float[][] cells = grid.getGrid();
+        if (regenLeft == null || regenLeft.length != cells.length) {
+            regenLeft = new float[cells.length][];
+            for (int x = 0; x < cells.length; x++) {
+                regenLeft[x] = new float[cells[x].length];
+                Arrays.fill(regenLeft[x], cap);
+            }
+        }
         boolean changed = false;
         for (int x = 0; x < cells.length; x++) {
             for (int y = 0; y < cells[x].length; y++) {
                 float value = cells[x][y];
-                if (value < cap) {
-                    grid.setArmorValue(x, y, Math.min(cap, value + gain));
+                float left = y < regenLeft[x].length ? regenLeft[x][y] : 0f;
+                if (value < cap && left > 0f) {
+                    float add = Math.min(Math.min(gain, cap - value), left);
+                    grid.setArmorValue(x, y, value + add);
+                    regenLeft[x][y] = left - add;
                     changed = true;
                 }
             }

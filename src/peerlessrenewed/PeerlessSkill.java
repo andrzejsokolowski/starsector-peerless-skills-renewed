@@ -44,7 +44,7 @@ public enum PeerlessSkill {
             "Weapons cost 1 / 2 / 4 fewer ordnance points (small / medium / large).",
             "+0.75 flux dissipation and +10 flux capacity for every ordnance point spent on hull mods."),
     POLARIZED_ARMOR("polarized_armor",
-            "After 3 seconds without armor or hull damage, armor slowly rebuilds itself, up to 50% of each cell's full armor.",
+            "After 3 seconds without armor or hull damage, armor slowly rebuilds itself, up to 50% of each cell's full armor. Each cell can rebuild that much only once per battle.",
             "Engines and weapons repair twice as fast while venting."),
     MISSILE_SPECIALIZATION("missile_specialization",
             "Guided missiles turn 50% faster. Unguided missiles slowly steer toward their target.",
