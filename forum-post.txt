@@ -78,6 +78,8 @@ This mod is under the CC0 (Creative Commons Zero) License, allowing you to do wh
 [/spoiler]
 
 [spoiler=Version log]
+[b]1.1.0[/b]
+[list][li]Updated for Starsector 0.98.5a.[/li][/list]
 [b]1.0.4[/b]
 [list][li]Polarized Armor: each armor cell now rebuilds only once per battle, at most half of its full armor. Before, a cell could rebuild again every time the ship went 3 seconds without damage.[/li][/list]
 [b]1.0.3[/b]

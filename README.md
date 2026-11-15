@@ -1,6 +1,6 @@
 # Peerless Skills - Renewed
 
-A Starsector 0.98a mod by Oddisz. Your own fourteen combat skills get a third level past Elite:
+A Starsector 0.98.5a mod by Oddisz. Your own fourteen combat skills get a third level past Elite:
 **Peerless**. You buy it with Peerless skill points on the Second-in-Command Character screen (C).
 
 Requires LunaLib, LazyLib, PatchLib and Second-in-Command. Achievements - Renewed and Console Commands

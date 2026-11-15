@@ -1,3 +1,6 @@
+Version 1.1.0 (2026-11-15)
+- Updated for Starsector 0.98.5a.
+
 Version 1.0.4 (2026-11-15)
 - Polarized Armor: each armor cell now rebuilds only once per battle, at most half of its full armor. Before, a cell could rebuild again every time the ship went 3 seconds without damage.
 
