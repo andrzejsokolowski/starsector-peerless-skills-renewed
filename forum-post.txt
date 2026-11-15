@@ -9,6 +9,10 @@ You buy it with Peerless skill points on the Second-in-Command Character screen 
 
 [color=red]Requires LunaLib, LazyLib, PatchLib and Second-in-Command.[/color]
 [/b][/center]
+[spoiler=Screenshots]
+[center][img]https://github.com/andrzejsokolowski/starsector-peerless-skills-renewed/blob/main/screenshots/01-peerless-character-skill.webp?raw=true[/img]
+[img]https://github.com/andrzejsokolowski/starsector-peerless-skills-renewed/blob/main/screenshots/02-peerless-officers.png?raw=true[/img][/center]
+[/spoiler]
 [center]
 [hr][center][size=12pt][b]Peerless Skill Points[/b][/size][/center][hr]
 [list]
