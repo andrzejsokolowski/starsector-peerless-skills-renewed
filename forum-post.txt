@@ -1,5 +1,5 @@
-[img width=128]https://raw.githubusercontent.com/andrzejsokolowski/starsector-peerless-skills-renewed/main/icon.png?v=2[/img]
-[center][size=28pt][url=https://github.com/andrzejsokolowski/starsector-peerless-skills-renewed/releases/latest][b]Peerless Skills - Renewed[/b][/url][/size]
+[center][img width=128]https://raw.githubusercontent.com/andrzejsokolowski/starsector-peerless-skills-renewed/main/icon.png?v=2[/img]
+[size=28pt][url=https://github.com/andrzejsokolowski/starsector-peerless-skills-renewed/releases/latest][b]Peerless Skills - Renewed[/b][/url][/size]
 [url=https://github.com/andrzejsokolowski/starsector-peerless-skills-renewed/releases/latest][img]https://img.shields.io/github/downloads/andrzejsokolowski/starsector-peerless-skills-renewed/total?style=for-the-badge&label=download[/img][/url]  [url=https://github.com/andrzejsokolowski/starsector-peerless-skills-renewed][img]https://img.shields.io/github/v/release/andrzejsokolowski/starsector-peerless-skills-renewed?display_name=tag&sort=semver&style=for-the-badge&label=source[/img][/url]
 [/center]
 [center][b]
