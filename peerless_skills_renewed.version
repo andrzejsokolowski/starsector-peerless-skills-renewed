@@ -1,7 +1,8 @@
 {
   "masterVersionFile": "https://raw.githubusercontent.com/andrzejsokolowski/starsector-peerless-skills-renewed/main/peerless_skills_renewed.version",
   "modName": "Peerless Skills - Renewed",
-  "modVersion": { "major": 1, "minor": 0, "patch": 1 },
+  "modThreadId": 36386,
+  "modVersion": { "major": 1, "minor": 0, "patch": 2 },
   "directDownloadURL": "https://github.com/andrzejsokolowski/starsector-peerless-skills-renewed/releases/latest/download/PeerlessSkillsRenewed.zip",
   "changelogURL": "https://raw.githubusercontent.com/andrzejsokolowski/starsector-peerless-skills-renewed/main/changelog.txt",
   "starsectorVersion": "0.98a-RC8"
